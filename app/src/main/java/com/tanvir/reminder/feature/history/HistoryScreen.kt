@@ -37,7 +37,7 @@ fun HistoryRoute(
     val state = viewModel.state
     HistoryScreen(
         state = state,
-        navigateToMedicationDetail = navigateToReminderDetail
+        navigateToReminderDetail = navigateToReminderDetail
     )
 }
 
@@ -45,7 +45,7 @@ fun HistoryRoute(
 @Composable
 fun HistoryScreen(
     state: HistoryState,
-    navigateToMedicationDetail: (Reminder) -> Unit
+    navigateToReminderDetail: (Reminder) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -67,37 +67,37 @@ fun HistoryScreen(
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            MedicationList(
+            ReminderList(
                 state = state,
-                navigateToMedicationDetail = navigateToMedicationDetail
+                navigateToReminderDetail = navigateToReminderDetail
             )
         }
     }
 }
 
 @Composable
-fun MedicationList(
+fun ReminderList(
     state: HistoryState,
-    navigateToMedicationDetail: (Reminder) -> Unit
+    navigateToReminderDetail: (Reminder) -> Unit
 ) {
 
-    val filteredMedicationList = state.reminders.filter { it.time.hasPassed() }
-    val sortedMedicationList: List<ReminderListItem> = filteredMedicationList.sortedBy { it.time }.map { ReminderListItem.ReminderItem(it) }
+    val filteredReminderList = state.reminders.filter { it.time.hasPassed() }
+    val sortedReminderList: List<ReminderListItem> = filteredReminderList.sortedBy { it.time }.map { ReminderListItem.ReminderItem(it) }
 
-    when (sortedMedicationList.isEmpty()) {
+    when (sortedReminderList.isEmpty()) {
         true -> EmptyView()
-        false -> MedicationLazyColumn(sortedMedicationList, navigateToMedicationDetail)
+        false -> ReminderLazyColumn(sortedReminderList, navigateToReminderDetail)
     }
 }
 
 @Composable
-fun MedicationLazyColumn(sortedMedicationList: List<ReminderListItem>, navigateToMedicationDetail: (Reminder) -> Unit) {
+fun ReminderLazyColumn(sortedReminderList: List<ReminderListItem>, navigateToReminderDetail: (Reminder) -> Unit) {
     LazyColumn(
         modifier = Modifier,
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(
-            items = sortedMedicationList,
+            items = sortedReminderList,
             itemContent = {
                 when (it) {
                     is ReminderListItem.OverviewItem -> { }
@@ -114,8 +114,8 @@ fun MedicationLazyColumn(sortedMedicationList: List<ReminderListItem>, navigateT
                     is ReminderListItem.ReminderItem -> {
                         ReminderCard(
                             reminder = it.reminder,
-                            navigateToReminderDetail = { medication ->
-                                navigateToMedicationDetail(medication)
+                            navigateToReminderDetail = { reminder ->
+                                navigateToReminderDetail(reminder)
                             }
                         )
                     }

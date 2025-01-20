@@ -1,4 +1,4 @@
-package com.tanvir.reminder.feature.medicationconfirm.viewmodel
+package com.tanvir.reminder.feature.remiderconfirm.viewmodel
 
 import com.tanvir.reminder.domain.model.Reminder
 

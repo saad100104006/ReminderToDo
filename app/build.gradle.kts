@@ -83,7 +83,8 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
 
     // Gson
-   // implementation(libs.gson)
+    implementation(libs.gson)
+    implementation (libs.gson.converter)
 
     // Room
     implementation(libs.room.runtime)
@@ -97,35 +98,11 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
-    //implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
     // Accompanist
     implementation(libs.accompanist.permission)
-
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-   // implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-
-   /* //Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)*/
-
-/*    //Coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-    // Coroutines - Deferred adapter
-    implementation(libs.retrofit2.kotlin.coroutines.adapter)
-    implementation (libs.converter.moshi)*/
-
-    //implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-   // implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-coroutines-adapter:1.7.1")
-
-
-/*    //Moshi
-    implementation (libs.moshi)
-    implementation (libs.moshi.kotlin)
-    implementation (libs.moshi.adapters)*/
+    implementation (libs.android.retrofit)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.ext)

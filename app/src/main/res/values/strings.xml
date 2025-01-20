@@ -62,4 +62,5 @@
     <string name="daily" tools:ignore="MissingTranslation">Daily</string>
     <string name="weekly" tools:ignore="MissingTranslation">Weekly</string>
     <string name="monthly" tools:ignore="MissingTranslation">Monthly</string>
+    <string name="server_todo_reminders_can_t_be_modified">Server ToDo Reminders can\'t be Modified</string>
 </resources>

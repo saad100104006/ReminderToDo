@@ -11,9 +11,9 @@ import com.tanvir.reminder.feature.addreminder.navigation.addReminderGraph
 import com.tanvir.reminder.feature.history.historyGraph
 import com.tanvir.reminder.feature.home.navigation.HomeDestination
 import com.tanvir.reminder.feature.home.navigation.homeGraph
-import com.tanvir.reminder.feature.medicationconfirm.navigation.REMINDER
-import com.tanvir.reminder.feature.medicationconfirm.navigation.MedicationConfirmDestination
-import com.tanvir.reminder.feature.medicationconfirm.navigation.reminderConfirmGraph
+import com.tanvir.reminder.feature.remiderconfirm.navigation.REMINDER
+import com.tanvir.reminder.feature.remiderconfirm.navigation.ReminderConfirmDestination
+import com.tanvir.reminder.feature.remiderconfirm.navigation.reminderConfirmGraph
 import com.tanvir.reminder.feature.reminderdetail.ReminderDetailDestination
 import com.tanvir.reminder.feature.reminderdetail.reminderDetailGraph
 import com.tanvir.reminder.util.navigateSingleTop
@@ -35,18 +35,18 @@ fun NavHost(
             navController = navController,
             bottomBarVisibility = bottomBarVisibility,
             fabVisibility = fabVisibility,
-            navigateToMedicationDetail = { medication ->
+            navigateToReminderDetail = { reminder ->
                 navController.navigate(
-                    ReminderDetailDestination.createNavigationRoute(medication.id)
+                    ReminderDetailDestination.createNavigationRoute(reminder.id)
                 )
             }
         )
         historyGraph(
             bottomBarVisibility = bottomBarVisibility,
             fabVisibility = fabVisibility,
-            navigateToReminderDetail = { medication ->
+            navigateToReminderDetail = { reminder ->
                 navController.navigate(
-                    ReminderDetailDestination.createNavigationRoute(medication.id)
+                    ReminderDetailDestination.createNavigationRoute(reminder.id)
                 )
             }
         )
@@ -66,7 +66,7 @@ fun NavHost(
                 navController.currentBackStackEntry?.savedStateHandle.apply {
                     this?.set(REMINDER, bundle)
                 }
-                navController.navigate(MedicationConfirmDestination.route)
+                navController.navigate(ReminderConfirmDestination.route)
             }
         )
         reminderConfirmGraph(

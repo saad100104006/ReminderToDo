@@ -11,18 +11,18 @@ import com.tanvir.reminder.R
 
 const val HOUR_MINUTE_FORMAT = "h:mm a"
 @Composable
-fun getTimeRemaining(medication: Reminder): String {
+fun getTimeRemaining(reminder: Reminder): String {
     val currentTime = Calendar.getInstance().time
-    val dateBefore = medication.time
+    val dateBefore = reminder.time
     val timeDiff = abs(currentTime.time - dateBefore.time)
 
-    // If the medication is scheduled for a future date, display days remaining
-    if (medication.time.toFormattedDateString() != medication.endDate.toFormattedDateString()) {
+    // If the reminder is scheduled for a future date, display days remaining
+    if (reminder.time.toFormattedDateString() != reminder.endDate.toFormattedDateString()) {
         val daysRemaining = TimeUnit.DAYS.convert(timeDiff, TimeUnit.MILLISECONDS) + 1L
         return stringResource(id = R.string.time_remaining, daysRemaining, stringResource(id = R.string.days))
     }
 
-    // If the medication is scheduled for today, calculate time remaining in hours and minutes
+    // If the reminder is scheduled for today, calculate time remaining in hours and minutes
     val hoursRemaining = TimeUnit.HOURS.convert(timeDiff, TimeUnit.MILLISECONDS)
     val minutesRemaining = TimeUnit.MINUTES.convert(timeDiff, TimeUnit.MILLISECONDS)
     return when {

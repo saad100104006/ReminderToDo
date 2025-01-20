@@ -62,7 +62,7 @@ fun ReminderDetailRoute(
     onBackClicked: () -> Unit,
     viewModel: ReminderDetailViewModel = hiltViewModel()
 ) {
-    val medication by viewModel.reminder.collectAsState()
+    val reminder by viewModel.reminder.collectAsState()
 
     LaunchedEffect(Unit) {
         reminderId?.let {
@@ -70,8 +70,8 @@ fun ReminderDetailRoute(
         }
     }
 
-    medication?.let {
-        MedicationDetailScreen(
+    reminder?.let {
+        ReminderDetailScreen(
             reminder = it,
             viewModel = viewModel,
             onBackClicked = onBackClicked
@@ -81,7 +81,7 @@ fun ReminderDetailRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MedicationDetailScreen(
+fun ReminderDetailScreen(
     reminder: Reminder,
     viewModel: ReminderDetailViewModel,
     onBackClicked: () -> Unit

@@ -1,4 +1,4 @@
-package com.tanvir.reminder.feature.medicationconfirm
+package com.tanvir.reminder.feature.remiderconfirm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tanvir.reminder.domain.model.Reminder
 import com.tanvir.reminder.extension.toFormattedDateString
-import com.tanvir.reminder.feature.medicationconfirm.viewmodel.ReminderConfirmState
-import com.tanvir.reminder.feature.medicationconfirm.viewmodel.ReminderConfirmViewModel
+import com.tanvir.reminder.feature.remiderconfirm.viewmodel.ReminderConfirmState
+import com.tanvir.reminder.feature.remiderconfirm.viewmodel.ReminderConfirmViewModel
 import com.tanvir.reminder.util.SnackbarUtil.Companion.showSnackbar
 import com.tanvir.reminder.R
 
@@ -48,7 +48,7 @@ fun ReminderConfirmRoute(
             navigateToHome = navigateToHome,
         )
     } ?: {
-        FirebaseCrashlytics.getInstance().log("Error: Cannot show MedicationConfirmScreen. Medication is null.")
+        FirebaseCrashlytics.getInstance().log("Error: Cannot show ReminderConfirmScreen. Reminder is null.")
     }
 }
 
@@ -102,15 +102,15 @@ fun ReminderConfirmScreen(
             style = MaterialTheme.typography.displaySmall
         )
 
-        val medication = reminders.first()
+        val reminder = reminders.first()
         Text(
             text = pluralStringResource(
                 id = R.plurals.all_set,
                 count = reminders.size,
-                medication.title,
+                reminder.title,
                 reminders.size,
-                medication.recurrence.lowercase(),
-                medication.endDate.toFormattedDateString()
+                reminder.recurrence.lowercase(),
+                reminder.endDate.toFormattedDateString()
             ),
             style = MaterialTheme.typography.titleMedium
         )
@@ -129,7 +129,7 @@ fun ReminderConfirmScreen(
                 .height(56.dp)
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                viewModel.addMedication(ReminderConfirmState(reminders))
+                viewModel.addReminder(ReminderConfirmState(reminders))
             },
             shape = MaterialTheme.shapes.extraLarge
         ) {

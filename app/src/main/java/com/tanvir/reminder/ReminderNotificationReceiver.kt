@@ -29,7 +29,7 @@ class ReminderNotificationReceiver : BroadcastReceiver() {
         // Create deep link intent for notification click
         val activityIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            data = Uri.parse("doseapp://reminder/${reminder.id}")
+            data = Uri.parse("reminderapp://reminder/${reminder.id}")
         }
 
         val activityPendingIntent = PendingIntent.getActivity(

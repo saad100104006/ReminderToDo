@@ -100,7 +100,7 @@ fun ReminderCard(
                     style = MaterialTheme.typography.titleSmall
                 )
 
-                val medicationStatusText = when {
+                val reminderStatusText = when {
                     reminder.time.hasPassed() -> {
                         if (reminder.isCompleted) {
                             stringResource(
@@ -122,7 +122,7 @@ fun ReminderCard(
                 }
 
                 Text(
-                    text = medicationStatusText,
+                    text = reminderStatusText,
                     color = MaterialTheme.colorScheme.primary
                 )
 
@@ -135,11 +135,11 @@ fun ReminderCard(
 
 @Preview
 @Composable
-private fun MedicationCardTakeNowPreview() {
+private fun ReminderCardTakeNowPreview() {
     ReminderCard(
         Reminder(
             id = 123L,
-            title = "A big big name for a little medication I needs to take",
+            title = "A big big name for a little reminders I needs to take",
             description = "This is a sample description",
             recurrence = "2",
             endDate = Date(),
@@ -152,11 +152,11 @@ private fun MedicationCardTakeNowPreview() {
 
 @Preview
 @Composable
-private fun MedicationCardTakenPreview() {
+private fun ReminderCardTakenPreview() {
     ReminderCard(
         Reminder(
             id = 123L,
-            title = "A big big name for a little medication I needs to take",
+            title = "A big big name for a little reminder I needs to take",
             description = "This is a sample description",
             recurrence = "2",
             endDate = Date(),

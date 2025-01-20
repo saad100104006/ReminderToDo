@@ -36,33 +36,30 @@ class AddReminderViewModel @Inject constructor(
         }
 
         val oneDayInMillis = 86400 * 1000 // Number of milliseconds in one day
-        val numOccurrences = ((endDate.time + oneDayInMillis - startDate.time) / (interval * oneDayInMillis)).toInt() + 1
+        val numOccurrences =
+            ((endDate.time + oneDayInMillis - startDate.time) / (interval * oneDayInMillis)).toInt() + 1
 
         val reminders = mutableListOf<Reminder>()
         val calendar = Calendar.getInstance()
         calendar.time = startDate
-       // for (i in 0 until numOccurrences) {
-           // for (medicationTime in medicationTimes) {
-                val reminder = Reminder(
-                    id = 0,
-                    title = title,
-                    description = description,
-                    recurrence = recurrence,
-                    endDate = endDate,
-                    isCompleted = false,
-                    time = getReminderTime(reminderTimes, calendar),
-                    isFromServer = false
-                )
-                reminders.add(reminder)
-            //}
+        val reminder = Reminder(
+            id = 0,
+            title = title,
+            description = description,
+            recurrence = recurrence,
+            endDate = endDate,
+            isCompleted = false,
+            time = getReminderTime(reminderTimes, calendar),
+            isFromServer = false
+        )
+        reminders.add(reminder)
 
-            // Increment the date based on the recurrence interval
-            if(interval<1){
-                calendar.add(Calendar.DAY_OF_YEAR, 1)
-            } else {
-                calendar.add(Calendar.DAY_OF_YEAR, interval.toInt())
-            }
-       // }
+        // Increment the date based on the recurrence interval
+        if (interval < 1) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        } else {
+            calendar.add(Calendar.DAY_OF_YEAR, interval.toInt())
+        }
 
         return reminders
     }

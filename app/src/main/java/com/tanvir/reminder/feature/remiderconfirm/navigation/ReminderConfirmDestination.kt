@@ -1,4 +1,4 @@
-package com.tanvir.reminder.feature.medicationconfirm.navigation
+package com.tanvir.reminder.feature.remiderconfirm.navigation
 
 import android.os.Bundle
 import androidx.compose.runtime.LaunchedEffect
@@ -8,11 +8,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.tanvir.reminder.core.navigation.ReminderNavigationDestination
 import com.tanvir.reminder.domain.model.Reminder
-import com.tanvir.reminder.feature.medicationconfirm.ReminderConfirmRoute
+import com.tanvir.reminder.feature.remiderconfirm.ReminderConfirmRoute
 
 const val REMINDER = "reminder"
 
-object MedicationConfirmDestination : ReminderNavigationDestination {
+object ReminderConfirmDestination : ReminderNavigationDestination {
     override val route = "reminder_confirm_route"
     override val destination = "reminder_confirm_destination"
 }
@@ -20,14 +20,14 @@ object MedicationConfirmDestination : ReminderNavigationDestination {
 fun NavGraphBuilder.reminderConfirmGraph(navController: NavController, bottomBarVisibility: MutableState<Boolean>, fabVisibility: MutableState<Boolean>, onBackClicked: () -> Unit, navigateToHome: () -> Unit) {
 
     composable(
-        route = MedicationConfirmDestination.route,
+        route = ReminderConfirmDestination.route,
     ) {
         LaunchedEffect(null) {
             bottomBarVisibility.value = false
             fabVisibility.value = false
         }
-        val medicationBundle = navController.previousBackStackEntry?.savedStateHandle?.get<Bundle>(REMINDER)
-        val reminderList = medicationBundle?.getParcelableArrayList<Reminder>(REMINDER)
+        val reminderBundle = navController.previousBackStackEntry?.savedStateHandle?.get<Bundle>(REMINDER)
+        val reminderList = reminderBundle?.getParcelableArrayList<Reminder>(REMINDER)
         ReminderConfirmRoute(reminderList, onBackClicked, navigateToHome)
     }
 }

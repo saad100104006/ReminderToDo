@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -42,12 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -56,7 +54,6 @@ import com.tanvir.reminder.R
 import com.tanvir.reminder.domain.model.Reminder
 import com.tanvir.reminder.extension.toFormattedDateShortString
 import com.tanvir.reminder.extension.toFormattedMonthDateString
-import com.tanvir.reminder.feature.addreminder.navigation.AddReminderDestination
 import com.tanvir.reminder.feature.home.model.CalendarModel
 import com.tanvir.reminder.feature.home.viewmodel.HomeState
 import com.tanvir.reminder.feature.home.viewmodel.HomeViewModel
@@ -73,6 +70,12 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.homeUiState.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    LaunchedEffect(errorMessage) {
+       if(!errorMessage.isNullOrEmpty()){
+           showSnackbar(errorMessage)
+       }
+    }
     PermissionAlarmDialog(
         askAlarmPermission = askAlarmPermission,
     )
@@ -102,105 +105,28 @@ fun HomeScreen(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        DailyMedications(
+        DailyReminders(
             navController = navController,
             state = state,
-            navigateToMedicationDetail = navigateToReminderDetail,
+            navigateToReminderDetail = navigateToReminderDetail,
             onSelectedDate = onSelectedDate,
             onDateSelected = onDateSelected
         )
     }
 }
 
-@Composable
-fun Greeting() {
-    Column {
-        // TODO: Add greeting based on time of day e.g. Good Morning, Good Afternoon, Good evening.
-        // TODO: Get name from DB and show user's first name.
-        Text(
-            text = "Good morning,",
-            style = MaterialTheme.typography.displaySmall
-        )
-        Text(
-            text = "Kathryn!",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.displaySmall
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DailyOverviewCard(
-    navController: NavController,
-    medicationsToday: List<Reminder>,
-    logEvent: (String) -> Unit
-) {
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-            .height(156.dp),
-        shape = RoundedCornerShape(36.dp),
-        colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.tertiary
-        ),
-        onClick = {
-            navController.navigate(AddReminderDestination.route)
-        }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-
-                Text(
-                    text = stringResource(R.string.your_plan_for_today),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                Text(
-                    text = stringResource(
-                        id = R.string.daily_reminder_log,
-                        medicationsToday.filter { it.isCompleted }.size,
-                        medicationsToday.size
-                    ),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_pen), contentDescription = ""
-                )
-            }
-        }
-    }
-}
 
 @Composable
-fun DailyMedications(
+fun DailyReminders(
     navController: NavController,
     state: HomeState,
-    navigateToMedicationDetail: (Reminder) -> Unit,
+    navigateToReminderDetail: (Reminder) -> Unit,
     onSelectedDate: (Date) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
     onDateSelected: (CalendarModel.DateModel) -> Unit
 ) {
 
-    val toDoList by viewModel.toDoList.observeAsState(emptyList())
+    val toDoList by viewModel.toDoList.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -209,7 +135,7 @@ fun DailyMedications(
 
     Text(
         modifier = Modifier.padding(top = 8.dp),
-        text = "Reminder ToDo",
+        text = stringResource(R.string.app_name),
         fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.displaySmall
     )
@@ -222,9 +148,9 @@ fun DailyMedications(
             itemContent = {
                 ReminderCard(
                     reminder = it,
-                    navigateToReminderDetail = { medication ->
-                        viewModel.textToSpeech(context, "title"+medication.title+ "description"+medication.description)
-                        navigateToMedicationDetail(medication)
+                    navigateToReminderDetail = { reminder ->
+                        viewModel.textToSpeech(context, "title"+reminder.title+ "description"+reminder.description)
+                        navigateToReminderDetail(reminder)
                     }
                 )
             }
@@ -238,7 +164,7 @@ fun DailyMedications(
                     navigateToReminderDetail = {
                         viewModel.textToSpeech(context, "title"+it.title+ "description"+it.description)
                         showSnackbar(
-                            "Server ToDo Reminders can't be Modified"
+                            context.getString(R.string.server_todo_reminders_can_t_be_modified)
                         )
                     }
                 )
@@ -247,120 +173,10 @@ fun DailyMedications(
     }
 }
 
-
-@Composable
-fun DateList(
-    data: CalendarModel,
-    onDateClickListener: (CalendarModel.DateModel) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        items(items = data.visibleDates) { date ->
-            DateItem(date, onDateClickListener)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DateItem(
-    date: CalendarModel.DateModel,
-    onClickListener: (CalendarModel.DateModel) -> Unit,
-) {
-    Column {
-        Text(
-            text = date.day, // day "Mon", "Tue"
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colorScheme.outline
-        )
-        Card(
-            modifier = Modifier
-                .padding(vertical = 4.dp, horizontal = 4.dp),
-            onClick = { onClickListener(date) },
-            colors = cardColors(
-                // background colors of the selected date
-                // and the non-selected date are different
-                containerColor = if (date.isSelected) {
-                    MaterialTheme.colorScheme.tertiary
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-            ),
-        ) {
-            Column(
-                modifier = Modifier
-                    .width(42.dp)
-                    .height(42.dp)
-                    .padding(8.dp)
-                    .fillMaxSize(), // Fill the available size in the Column
-                verticalArrangement = Arrangement.Center, // Center vertically
-                horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
-            ) {
-                Text(
-                    text = date.date.toFormattedDateShortString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = if (date.isSelected) {
-                        FontWeight.Medium
-                    } else {
-                        FontWeight.Normal
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DateHeader(
-    data: CalendarModel,
-    onPrevClickListener: (Date) -> Unit,
-    onNextClickListener: (Date) -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(vertical = 16.dp),
-    ) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterVertically),
-            text = if (data.selectedDate.isToday) {
-                stringResource(R.string.today)
-            } else {
-                data.selectedDate.date.toFormattedMonthDateString()
-            },
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.tertiary
-        )
-        IconButton(onClick = {
-            onPrevClickListener(data.startDate.date)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowLeft,
-                tint = MaterialTheme.colorScheme.tertiary,
-                contentDescription = "Back"
-            )
-        }
-        IconButton(onClick = {
-            onNextClickListener(data.endDate.date)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowRight,
-                tint = MaterialTheme.colorScheme.tertiary,
-                contentDescription = "Next"
-            )
-        }
-    }
-}
-
 sealed class ReminderListItem {
     data class OverviewItem(
-        val medicationsToday: List<Reminder>,
-        val isMedicationListEmpty: Boolean
+        val remindersToday: List<Reminder>,
+        val isReminderListEmpty: Boolean
     ) : ReminderListItem()
 
     data class ReminderItem(val reminder: Reminder) : ReminderListItem()

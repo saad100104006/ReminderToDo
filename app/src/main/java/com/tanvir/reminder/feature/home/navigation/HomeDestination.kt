@@ -16,7 +16,7 @@ object HomeDestination : ReminderNavigationDestination {
     override val destination = "home_destination"
 }
 
-fun NavGraphBuilder.homeGraph(navController: NavController, bottomBarVisibility: MutableState<Boolean>, fabVisibility: MutableState<Boolean>, navigateToMedicationDetail: (Reminder) -> Unit) {
+fun NavGraphBuilder.homeGraph(navController: NavController, bottomBarVisibility: MutableState<Boolean>, fabVisibility: MutableState<Boolean>, navigateToReminderDetail: (Reminder) -> Unit) {
     composable(route = HomeDestination.route) {
         LaunchedEffect(null) {
             bottomBarVisibility.value = true
@@ -25,6 +25,6 @@ fun NavGraphBuilder.homeGraph(navController: NavController, bottomBarVisibility:
         val askNotificationPermission = navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(ASK_NOTIFICATION_PERMISSION) ?: false
         val askAlarmPermission = navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>(ASK_ALARM_PERMISSION) ?: false
 
-        HomeRoute(navController, askNotificationPermission, askAlarmPermission, navigateToMedicationDetail)
+        HomeRoute(navController, askNotificationPermission, askAlarmPermission, navigateToReminderDetail)
     }
 }

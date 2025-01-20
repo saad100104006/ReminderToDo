@@ -64,16 +64,16 @@ import com.tanvir.reminder.R
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    AddReminderRoute(onBackClicked = {}, navigateToMedicationConfirm = {})
+    AddReminderRoute(onBackClicked = {}, navigateToReminderConfirm = {})
 }
 
 @Composable
 fun AddReminderRoute(
     onBackClicked: () -> Unit,
-    navigateToMedicationConfirm: (List<Reminder>) -> Unit,
+    navigateToReminderConfirm: (List<Reminder>) -> Unit,
     viewModel: AddReminderViewModel = hiltViewModel()
 ) {
-    AddToDoScreen(onBackClicked, viewModel, navigateToMedicationConfirm)
+    AddToDoScreen(onBackClicked, viewModel, navigateToReminderConfirm)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,14 +92,8 @@ fun AddToDoScreen(
     }
     val context = LocalContext.current
 
-    fun addTime(time: CalendarInformation) {
-        selectedTimes.add(time)
-       // viewModel.logEvent(eventName = AnalyticsEvents.ADD_MEDICATION_ADD_TIME_CLICKED)
-    }
-
     fun removeTime(time: CalendarInformation) {
         selectedTimes.remove(time)
-        //viewModel.logEvent(eventName = AnalyticsEvents.ADD_MEDICATION_DELETE_TIME_CLICKED)
     }
 
     Scaffold(
@@ -137,7 +131,7 @@ fun AddToDoScreen(
                     .padding(vertical = 16.dp)
                     .height(56.dp),
                 onClick = {
-                    validateMedication(
+                    validateReminder(
                         title = toDoTitle,
                         description = toDoDescription?:"",
                         recurrence = recurrence,
@@ -266,7 +260,7 @@ fun AddToDoScreen(
     }
 }
 
-private fun validateMedication(
+private fun validateReminder(
     title: String,
     description: String,
     recurrence: String,
@@ -291,10 +285,10 @@ private fun validateMedication(
         return
     }
 
-    val medications =
+    val reminders =
         viewModel.createReminders(title, description, recurrence, Date(endDate), selectedTimes)
 
-    onValidate(medications)
+    onValidate(reminders)
 }
 
 private fun handleSelection(

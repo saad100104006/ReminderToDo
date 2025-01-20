@@ -1,9 +1,9 @@
-package com.tanvir.reminder.feature.medicationconfirm.viewmodel
+package com.tanvir.reminder.feature.remiderconfirm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tanvir.reminder.ReminderNotificationService
-import com.tanvir.reminder.feature.medicationconfirm.usecase.AddReminderUseCase
+import com.tanvir.reminder.feature.remiderconfirm.usecase.AddReminderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,14 +18,14 @@ class ReminderConfirmViewModel @Inject constructor(
     private val _isReminderSaved = MutableSharedFlow<Unit>()
     val isReminderSaved = _isReminderSaved.asSharedFlow()
 
-    fun addMedication(state: ReminderConfirmState) {
+    fun addReminder(state: ReminderConfirmState) {
         viewModelScope.launch {
             val reminders = state.reminders
-            addReminderUseCase.addMedication(reminders).collect { savedMedications ->
-                // Schedule notifications for saved medications that have proper IDs
-                savedMedications.forEach { medication ->
+            addReminderUseCase.addReminder(reminders).collect { savedReminders ->
+                // Schedule notifications for saved reminders that have proper IDs
+                savedReminders.forEach { reminder ->
                     reminderNotificationService.scheduleNotification(
-                        reminder = medication
+                        reminder = reminder
                     )
                 }
                 _isReminderSaved.emit(Unit)
