@@ -1,0 +1,65 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Reminder ToDo</string>
+    <string name="home">Home</string>
+    <string name="calendar">Calendar</string>
+    <string name="add_time" tools:ignore="MissingTranslation">Add Time</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="reminder_name">Reminder Name</string>
+    <string name="description">Description</string>
+    <string name="recurrence">Recurrence</string>
+    <string name="end_date">End Date</string>
+    <string name="times_of_day">Times of Day</string>
+    <string name="times_for_todo">Time(s) for ToDo</string>
+    <string name="next">Next</string>
+    <string name="value_is_empty">Please enter a valid value for %s</string>
+    <string name="all_done">All done!</string>
+    <plurals name="all_set" tools:ignore="MissingTranslation">
+        <item quantity="one">Your %1$s reminders are ready, with %2$s alert %3$s until %4$s.</item>
+        <item quantity="many">Your %1$s reminders are ready, with %2$s alerts %3$s until %4$s.</item>
+        <item quantity="other">Your %1$s reminders are ready, with %2$s alerts %3$s until %4$s.</item>
+    </plurals>
+    <string name="confirm">Confirm</string>
+    <string name="time_remaining">Next reminder in %1$s %2$s</string>
+    <string name="days">days</string>
+    <string name="hours">hours</string>
+    <string name="minutes">minutes</string>
+    <string name="complete_reminder_now">Complete your reminder now</string>
+    <string name="taken">Taken</string>
+    <string name="skipped">Skipped</string>
+    <string name="done">Done</string>
+    <string name="history">History</string>
+    <string name="no_history_yet">No history yet</string>
+    <string name="back">Back</string>
+    <string name="add">Add</string>
+    <string name="reminder_name_hint">e.g. Take a Walk</string>
+    <string name="error">Error</string>
+    <string name="selected_content_description">Selected</string>
+    <string name="frequency_mismatch_error_message">You\'re selecting %s time(s) of days which is more than the number of reminder.</string>
+    <string name="your_plan_for_today">Your plan for today</string>
+    <string name="daily_reminder_log">%d of %d completed.</string>
+    <string name="reminder_break">Reminder Break</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="next_week">Next Week</string>
+    <string name="notifications">Notifications</string>
+    <string name="notification_permission_required">Notification Permission Required</string>
+    <string name="notification_permission_required_description_message">To ensure you never miss your reminder, please grant the notification permission.</string>
+    <string name="alarms" tools:ignore="MissingTranslation">Notifications</string>
+    <string name="alarms_permission_required" tools:ignore="MissingTranslation">Alarms Permission Required</string>
+    <string name="alarms_permission_required_description_message" tools:ignore="MissingTranslation">To ensure you never miss your reminder, please grant the alarms permission.</string>
+    <string name="allow">Allow</string>
+    <string name="reminder_taken_at">Completed at %s</string>
+    <string name="reminder_skipped_at">Skipped at %s</string>
+    <string name="reminder_scheduled_at">Scheduled at %s</string>
+    <string name="reminder_timely_reminders_setup_message">%s is now set up for timely reminders.</string>
+    <string name="reminder_logged">Reminder Logged</string>
+    <string name="reminder_details">%d reminder at %s</string>
+    <string name="todo_reminder">ToDo Reminder</string>
+    <string name="notifications_for_reminder">Notifications for reminder</string>
+    <string name="todo_reminder_time">It is time to complete your reminder, %s. Open the app to log it.</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="daily" tools:ignore="MissingTranslation">Daily</string>
+    <string name="weekly" tools:ignore="MissingTranslation">Weekly</string>
+    <string name="monthly" tools:ignore="MissingTranslation">Monthly</string>
+</resources>
