@@ -4,7 +4,7 @@
 <img width="225" alt="Screenshot 2025-01-20 at 5 57 35 PM" src="https://github.com/user-attachments/assets/6817dda4-279b-470f-aad7-664dfffa56aa" />
 
 
-Reminder ToDo is a reminder app, Made with Jetpack Compose, Material Design 3, Room, Navigation Components, Kotlin Coroutines, Hilt using the recommended Android MVVM Clean Architecture Guidelines.
+Reminder ToDo is a reminder app, Made with Jetpack Compose, Material Design 3, Room, Retrofit, Navigation Components, Kotlin Coroutines, Hilt using the recommended Android MVVM Clean Architecture Guidelines.
 
 Users can create, view, edit, and delete reminders with details such as title, description, date-time, and recurrence options (e.g., every 15, 30, 45 minutes, hourly, daily).
 
@@ -14,6 +14,4 @@ Reminders will trigger notifications at the scheduled time. Prompt users clearly
 are denied and offer an easy way to change their decision later.
 
 It Announces the title and description of reminders (local and API) when tapped using Text-to-Speech (TTS) using the Accessibility service.
-
-Handle errors API/network failures, etc. with user-friendly messages.
 
