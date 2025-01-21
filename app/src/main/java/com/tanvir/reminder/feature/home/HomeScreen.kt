@@ -2,42 +2,33 @@ package com.tanvir.reminder.feature.home
 
 import android.Manifest
 import android.app.AlarmManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.text.TextUtils
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults.cardColors
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -52,8 +43,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.tanvir.reminder.R
 import com.tanvir.reminder.domain.model.Reminder
-import com.tanvir.reminder.extension.toFormattedDateShortString
-import com.tanvir.reminder.extension.toFormattedMonthDateString
 import com.tanvir.reminder.feature.home.model.CalendarModel
 import com.tanvir.reminder.feature.home.viewmodel.HomeState
 import com.tanvir.reminder.feature.home.viewmodel.HomeViewModel
@@ -115,7 +104,6 @@ fun HomeScreen(
     }
 }
 
-
 @Composable
 fun DailyReminders(
     navController: NavController,
@@ -125,10 +113,16 @@ fun DailyReminders(
     viewModel: HomeViewModel = hiltViewModel(),
     onDateSelected: (CalendarModel.DateModel) -> Unit
 ) {
-
+    var showAccessibilityDialog by remember { mutableStateOf(false) }
     val toDoList by viewModel.toDoList.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    if(showAccessibilityDialog){
+        EnableAccessibilityDialog(onConfirm = {
+            showAccessibilityDialog = false
+            openAccessibilitySettings(context)
+        }) {showAccessibilityDialog = false }
+    }
     LaunchedEffect(Unit) {
         viewModel.fetchToDos()
     }
@@ -140,6 +134,7 @@ fun DailyReminders(
         style = MaterialTheme.typography.displaySmall
     )
 
+
     LazyColumn(
         modifier = Modifier,
     ) {
@@ -149,8 +144,13 @@ fun DailyReminders(
                 ReminderCard(
                     reminder = it,
                     navigateToReminderDetail = { reminder ->
-                        viewModel.textToSpeech(context, "title"+reminder.title+ "description"+reminder.description)
-                        navigateToReminderDetail(reminder)
+                        if(isAccessibilityServiceEnabled(context)) {
+                            showAccessibilityDialog = false
+                            textToSpeech(context, "title" + reminder.title + "description" + reminder.description)
+                            navigateToReminderDetail(reminder)
+                        } else {
+                            showAccessibilityDialog = true
+                        }
                     }
                 )
             }
@@ -162,10 +162,15 @@ fun DailyReminders(
                 ReminderCard(
                     reminder = it,
                     navigateToReminderDetail = {
-                        viewModel.textToSpeech(context, "title"+it.title+ "description"+it.description)
-                        showSnackbar(
-                            context.getString(R.string.server_todo_reminders_can_t_be_modified)
-                        )
+                        if(isAccessibilityServiceEnabled(context)) {
+                            showAccessibilityDialog = false
+                            textToSpeech(context, "title" + it.title + "description" + it.description)
+                            showSnackbar(
+                                context.getString(R.string.server_todo_reminders_can_t_be_modified)
+                            )
+                        } else {
+                            showAccessibilityDialog = true
+                        }
                     }
                 )
             }
@@ -283,4 +288,57 @@ fun PermissionAlarmDialog(
             }
         }
     }
+}
+
+@Composable
+fun EnableAccessibilityDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(stringResource(R.string.enable_accessibility_service_for_text_to_speech_feature))
+        },
+        text = {
+            Text(stringResource(R.string.to_listen_your_reminder_please_enable_the_accessibility_service_in_your_device_settings))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.enable))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+private fun isAccessibilityServiceEnabled(context: Context): Boolean {
+    val serviceName = "com.tanvir.reminder.TTSAccessibilityService"
+    val enabledServices =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+    return !TextUtils.isEmpty(enabledServices) && enabledServices.contains(serviceName)
+}
+
+private fun openAccessibilitySettings(context: Context) {
+    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+    context.startActivity(intent)
+}
+
+private fun textToSpeech(context: Context, text: String){
+    val event =
+        AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT)
+            .apply {
+                className = "com.tanvir.reminder.MainActivity"
+                packageName = packageName
+                isEnabled = true
+                this.text.add(text)
+            }
+
+    val accessibilityManager =
+        context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+    accessibilityManager.sendAccessibilityEvent(event)
 }

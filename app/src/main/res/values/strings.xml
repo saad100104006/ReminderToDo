@@ -71,4 +71,8 @@
     <string name="completed">Completed</string>
     <string name="delete">Delete</string>
     <string name="todo_task_deleted">ToDo Task deleted</string>
+    <string name="accessibility_service_description">Accessibility TTS Service</string>
+    <string name="to_listen_your_reminder_please_enable_the_accessibility_service_in_your_device_settings">To listen your reminder, please enable the Accessibility Service in your device settings.</string>
+    <string name="enable_accessibility_service_for_text_to_speech_feature">Enable Accessibility Service for text to speech feature</string>
+    <string name="enable">Enable</string>
 </resources>

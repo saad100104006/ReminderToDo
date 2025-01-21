@@ -107,27 +107,6 @@ class HomeViewModel @Inject constructor(
         savedStateHandle[DATE_FILTER_KEY] = selectedDate.date.toFormattedYearMonthDateString()
     }
 
-    private  var  textToSpeech:TextToSpeech? = null
-
-    fun textToSpeech(context: Context, text: String){
-        textToSpeech = TextToSpeech(
-            context
-        ) {
-            if (it == TextToSpeech.SUCCESS) {
-                textToSpeech?.let { txtToSpeech ->
-                    txtToSpeech.language = Locale.US
-                    txtToSpeech.setSpeechRate(.5f)
-                    txtToSpeech.speak(
-                        text,
-                        TextToSpeech.QUEUE_ADD,
-                        null,
-                        null
-                    )
-                }
-            }
-        }
-    }
-
     companion object {
         const val DATE_FILTER_KEY = "reminder_date_filter"
     }
