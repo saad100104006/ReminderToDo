@@ -63,4 +63,12 @@
     <string name="weekly" tools:ignore="MissingTranslation">Weekly</string>
     <string name="monthly" tools:ignore="MissingTranslation">Monthly</string>
     <string name="server_todo_reminders_can_t_be_modified">Server ToDo Reminders can\'t be Modified</string>
+    <string name="time_s_for_todo">Time(s) for ToDo</string>
+    <string name="end_date_new">End Date</string>
+    <string name="title">Title</string>
+    <string name="update">Update</string>
+    <string name="todo_task_logged">ToDo Task Logged</string>
+    <string name="completed">Completed</string>
+    <string name="delete">Delete</string>
+    <string name="todo_task_deleted">ToDo Task deleted</string>
 </resources>

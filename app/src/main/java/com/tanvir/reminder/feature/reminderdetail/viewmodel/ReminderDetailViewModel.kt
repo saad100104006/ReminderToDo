@@ -2,10 +2,12 @@ package com.tanvir.reminder.feature.reminderdetail.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tanvir.reminder.ReminderNotificationService
 import com.tanvir.reminder.domain.model.Reminder
 import com.tanvir.reminder.feature.home.usecase.DeleteReminderUseCase
 import com.tanvir.reminder.feature.home.usecase.UpdateReminderUseCase
 import com.tanvir.reminder.feature.reminderdetail.usecase.GetReminderUseCase
+import com.tanvir.reminder.util.Recurrence
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 class ReminderDetailViewModel @Inject constructor(
     private val getReminderUseCase: GetReminderUseCase,
     private val updateReminderUseCase: UpdateReminderUseCase,
-    private val deleteReminderUseCase: DeleteReminderUseCase
+    private val deleteReminderUseCase: DeleteReminderUseCase,
+    private val reminderNotificationService: ReminderNotificationService
 ) : ViewModel() {
     private val _reminder = MutableStateFlow<Reminder?>(null)
     val reminder = _reminder.asStateFlow()
@@ -29,9 +32,13 @@ class ReminderDetailViewModel @Inject constructor(
         }
     }
 
-    fun updateReminder(reminder: Reminder, isReminderTaken: Boolean, title: String, description: String, endDate: Date, time: Date) {
+    fun updateReminder(reminder: Reminder, isReminderTaken: Boolean, title: String, description: String, endDate: Date, time: Date, recurrence: String) {
         viewModelScope.launch {
-            updateReminderUseCase.updateReminder(reminder.copy(title = title,description = description, isCompleted = isReminderTaken, endDate = endDate, time = time))
+            updateReminderUseCase.updateReminder(reminder.copy(title = title,description = description, isCompleted = isReminderTaken, endDate = endDate, time = time, recurrence = recurrence))
+            reminderNotificationService.scheduleNotification(
+                reminder = reminder.copy(title = title,description = description, isCompleted = isReminderTaken, endDate = endDate, time = time, recurrence = recurrence)
+            )
+
         }
     }
 

@@ -15,6 +15,7 @@ class CalendarInformation(private val calendar: Calendar) {
 
     fun getTimeInMillis() = calendar.timeInMillis
 
+
     fun getDateFormatted(pattern: String): String {
         return try {
             SimpleDateFormat(pattern, Locale.getDefault()).format(calendar.time)

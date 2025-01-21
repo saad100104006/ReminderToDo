@@ -291,24 +291,6 @@ private fun validateReminder(
     onValidate(reminders)
 }
 
-private fun handleSelection(
-    isSelected: Boolean,
-    selectionCount: Int,
-    canSelectMoreTimesOfDay: Boolean,
-    onStateChange: (Int, Boolean) -> Unit,
-    onShowMaxSelectionError: () -> Unit
-) {
-    if (isSelected) {
-        onStateChange(selectionCount - 1, !isSelected)
-    } else {
-        if (canSelectMoreTimesOfDay) {
-            onStateChange(selectionCount + 1, !isSelected)
-        } else {
-            onShowMaxSelectionError()
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurrenceDropdownMenu(recurrence: (String) -> Unit) {

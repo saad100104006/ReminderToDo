@@ -15,7 +15,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,7 +56,9 @@ import com.tanvir.reminder.feature.addreminder.TimePickerDialogComponent
 import com.tanvir.reminder.feature.addreminder.model.CalendarInformation
 import com.tanvir.reminder.feature.reminderdetail.viewmodel.ReminderDetailViewModel
 import com.tanvir.reminder.util.HOUR_MINUTE_FORMAT
+import com.tanvir.reminder.util.Recurrence
 import com.tanvir.reminder.util.SnackbarUtil.Companion.showSnackbar
+import com.tanvir.reminder.util.getRecurrenceList
 import java.util.Calendar
 import java.util.Date
 
@@ -96,11 +102,15 @@ fun ReminderDetailScreen(
 
     var description by remember { mutableStateOf(reminder.description) }
 
-    var endDate by rememberSaveable { mutableLongStateOf(Date().time) }
+    var endDate by rememberSaveable { mutableLongStateOf(reminder.endDate.time) }
 
     val selectedTimes = rememberSaveable(saver = CalendarInformation.getStateListSaver()) {
         mutableStateListOf(CalendarInformation(Calendar.getInstance()))
     }
+
+    var recurrence by rememberSaveable { mutableStateOf(reminder.recurrence) }
+
+    val context = LocalContext.current
 
     fun removeTime(time: CalendarInformation) {
         selectedTimes.remove(time)
@@ -134,7 +144,7 @@ fun ReminderDetailScreen(
 
                         FloatingActionButton(
                             onClick = {
-                                showSnackbar("ToDo Task deleted")
+                                showSnackbar(context.getString(R.string.todo_task_deleted))
                                 viewModel.deleteTask(reminder, isCompletedTapped, title = title, description = description, endDate = Date(endDate), time = Date(selectedTimes.first().getTimeInMillis()))
                                 onBackClicked()
                             },
@@ -142,7 +152,7 @@ fun ReminderDetailScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete"
+                                contentDescription = stringResource(R.string.delete)
                             )
                         }
                     }
@@ -170,7 +180,7 @@ fun ReminderDetailScreen(
                         }
                     ) {
                         Text(
-                            text = "Completed",
+                            text = stringResource(R.string.completed),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -192,21 +202,22 @@ fun ReminderDetailScreen(
                     }
                 }
 
+                val context = LocalContext.current
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                         .height(56.dp),
                     onClick = {
-                        showSnackbar("ToDo Task Logged")
-                        viewModel.updateReminder(reminder, isCompletedTapped, title = title, description = description, endDate = Date(endDate), time = Date(selectedTimes.first().getTimeInMillis()))
-
+                        showSnackbar(context.getString(R.string.todo_task_logged))
+                        viewModel.updateReminder(reminder, isCompletedTapped, title = title, description = description, endDate = Date(endDate), time = Date(selectedTimes.first().getTimeInMillis()),  recurrence = recurrence)
                         onBackClicked()
                     },
                     shape = MaterialTheme.shapes.extraLarge
                 ) {
                     Text(
-                        text = "Update",
+                        text = stringResource(R.string.update),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -224,7 +235,7 @@ fun ReminderDetailScreen(
             TextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
+                label = { Text(stringResource(R.string.title)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -233,13 +244,12 @@ fun ReminderDetailScreen(
             TextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text(stringResource(R.string.description)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-
-            EndDateTextField {
+            EndDateTextField(reminder) {
                 endDate = it
             }
 
@@ -250,19 +260,23 @@ fun ReminderDetailScreen(
                     time = {
                         selectedTimes[index] = it
                     },
+                    reminder = reminder,
                     onDeleteClick = { removeTime(selectedTimes[index]) },
                     logEvent = {
                     },
                 )
             }
 
+            RecurrenceDropdownMenu(reminder = reminder) { recurrence = it }
+
         }
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EndDateTextField(endDate: (Long) -> Unit) {
+fun EndDateTextField(reminder: Reminder,endDate: (Long) -> Unit) {
     var shouldDisplay by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed: Boolean by interactionSource.collectIsPressedAsState()
@@ -277,7 +291,7 @@ fun EndDateTextField(endDate: (Long) -> Unit) {
     today.set(Calendar.MILLISECOND, 0)
     val currentDayMillis = today.timeInMillis
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis(),
+        initialSelectedDateMillis = reminder.endDate.time,
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return utcTimeMillis >= currentDayMillis
@@ -307,7 +321,7 @@ fun EndDateTextField(endDate: (Long) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         readOnly = true,
         value = selectedDate,
-        label = { Text("End Date") },
+        label = { Text(stringResource(R.string.end_date_new)) },
         onValueChange = {},
         trailingIcon = { Icons.Default.DateRange },
         interactionSource = interactionSource
@@ -318,13 +332,14 @@ fun EndDateTextField(endDate: (Long) -> Unit) {
 fun TimerTextField(
     isLastItem: Boolean,
     isOnlyItem: Boolean,
+    reminder: Reminder,
     time: (CalendarInformation) -> Unit,
     onDeleteClick: () -> Unit,
     logEvent: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed: Boolean by interactionSource.collectIsPressedAsState()
-    val currentTime = CalendarInformation(Calendar.getInstance())
+    val currentTime = CalendarInformation(millisecondsToCalendar(reminder.time.time))
     var selectedTime by rememberSaveable(
         stateSaver = CalendarInformation.getStateSaver()
     ) { mutableStateOf(currentTime) }
@@ -340,7 +355,7 @@ fun TimerTextField(
     )
 
     TextField(
-        label = { Text("Time(s) for ToDo") },
+        label = { Text(stringResource(R.string.time_s_for_todo)) },
         modifier = Modifier.fillMaxWidth(),
         readOnly = true,
         value = selectedTime.getDateFormatted(HOUR_MINUTE_FORMAT),
@@ -353,7 +368,7 @@ fun TimerTextField(
                     IconButton(onClick = onDeleteClick) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.delete),
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -363,4 +378,56 @@ fun TimerTextField(
         interactionSource = interactionSource
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecurrenceDropdownMenu(reminder: Reminder,recurrence: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.recurrence),
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        val options = getRecurrenceList().map { it.displayName }
+        var expanded by remember { mutableStateOf(false) }
+        var selectedOptionText by remember { mutableStateOf(reminder.recurrence) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+        ) {
+            TextField(
+                modifier = Modifier.menuAnchor(),
+                readOnly = true,
+                value = selectedOptionText,
+                onValueChange = {},
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                options.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        text = { Text(selectionOption) },
+                        onClick = {
+                            selectedOptionText = selectionOption
+                            recurrence(selectionOption)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+fun millisecondsToCalendar(milliseconds: Long): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = milliseconds
+    return calendar
+}
+
 
