@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tanvir.reminder.domain.model.Reminder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -36,7 +35,6 @@ class ReminderNotificationService @Inject constructor(
                     alarmPendingIntent
                 )
             } catch (exception: SecurityException) {
-                FirebaseCrashlytics.getInstance().recordException(exception)
             }
         }
     }

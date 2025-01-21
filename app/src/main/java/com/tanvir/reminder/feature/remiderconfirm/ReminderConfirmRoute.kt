@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tanvir.reminder.domain.model.Reminder
 import com.tanvir.reminder.extension.toFormattedDateString
 import com.tanvir.reminder.feature.remiderconfirm.viewmodel.ReminderConfirmState
@@ -48,7 +47,7 @@ fun ReminderConfirmRoute(
             navigateToHome = navigateToHome,
         )
     } ?: {
-        FirebaseCrashlytics.getInstance().log("Error: Cannot show ReminderConfirmScreen. Reminder is null.")
+        showSnackbar("Error: Cannot show ReminderConfirmScreen. Reminder is empty.")
     }
 }
 
