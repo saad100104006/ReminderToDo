@@ -15,5 +15,3 @@ are denied and offer an easy way to change their decision later.
 
 It Announces the title and description of reminders (local and API) when tapped using Text-to-Speech (TTS) using the Accessibility service.
 
-Handle errors API/network failures, etc. with user-friendly messages.
-
